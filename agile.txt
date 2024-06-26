@@ -12,71 +12,48 @@ SQL
 jUnit
 PL/SQL
 
+Starting the development server...
 
-PS C:\React Projects> npx create-react-app myapp
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:79:19)
+    at Object.createHash (node:crypto:139:10)
+    at module.exports (C:\React Projects\myapp\node_modules\webpack\lib\util\createHash.js:90:53)
+    at NormalModule._initBuildHash (C:\React Projects\myapp\node_modules\webpack\lib\NormalModule.js:401:16)
+    at handleParseError (C:\React Projects\myapp\node_modules\webpack\lib\NormalModule.js:449:10)
+    at C:\React Projects\myapp\node_modules\webpack\lib\NormalModule.js:481:5
+    at C:\React Projects\myapp\node_modules\webpack\lib\NormalModule.js:342:12
+    at C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:373:3
+    at iterateNormalLoaders (C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:214:10)
+    at iterateNormalLoaders (C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:221:10)
+    at C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:236:3
+    at runSyncOrAsync (C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:130:11)
+    at iterateNormalLoaders (C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:232:2)
+    at Array.<anonymous> (C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:205:4)
+    at Storage.finished (C:\React Projects\myapp\node_modules\enhanced-resolve\lib\CachedInputFileSystem.js:55:16)
+    at C:\React Projects\myapp\node_modules\enhanced-resolve\lib\CachedInputFileSystem.js:91:9
+C:\React Projects\myapp\node_modules\react-scripts\scripts\start.js:19
+  throw err;
+  ^
 
-Creating a new React app in C:\React Projects\myapp.
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:79:19)
+    at Object.createHash (node:crypto:139:10)
+    at module.exports (C:\React Projects\myapp\node_modules\webpack\lib\util\createHash.js:90:53)
+    at NormalModule._initBuildHash (C:\React Projects\myapp\node_modules\webpack\lib\NormalModule.js:401:16)
+    at C:\React Projects\myapp\node_modules\webpack\lib\NormalModule.js:433:10
+    at C:\React Projects\myapp\node_modules\webpack\lib\NormalModule.js:308:13
+    at C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:367:11
+    at C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:233:18
+    at context.callback (C:\React Projects\myapp\node_modules\loader-runner\lib\LoaderRunner.js:111:13)
+    at C:\React Projects\myapp\node_modules\babel-loader\lib\index.js:51:103 {
+  opensslErrorStack: [
+    'error:03000086:digital envelope routines::initialization error',
+    'error:0308010C:digital envelope routines::unsupported'
+  ],
+  library: 'digital envelope routines',
+  reason: 'unsupported',
+  code: 'ERR_OSSL_EVP_UNSUPPORTED'
+}
 
-Installing packages. This might take a couple of minutes.
-Installing react, react-dom, and react-scripts with cra-template...
-
-
-added 1482 packages in 2m
-
-262 packages are looking for funding
-  run `npm fund` for details
-
-Initialized a git repository.
-
-Installing template dependencies using npm...
-
-added 63 packages, and changed 1 package in 19s
-
-262 packages are looking for funding
-  run `npm fund` for details
-Removing template package using npm...
-
-
-removed 1 package, and audited 1545 packages in 11s
-
-262 packages are looking for funding
-  run `npm fund` for details
-
-8 vulnerabilities (2 moderate, 6 high)
-
-To address all issues (including breaking changes), run:
-  npm audit fix --force
-
-Run `npm audit` for details.
-
-Created git commit.
-
-Success! Created myapp at C:\React Projects\myapp
-Inside that directory, you can run several commands:
-
-  npm start
-    Starts the development server.
-
-  npm run build
-    Bundles the app into static files for production.
-
-  npm test
-    Starts the test runner.
-
-  npm run eject
-    Removes this tool and copies build dependencies, configuration files
-    and scripts into the app directory. If you do this, you can’t go back!
-
-We suggest that you begin by typing:
-
-  cd myapp
-  npm start
-
-Happy hacking!
-PS C:\React Projects> npm audit fix --force
-npm warn using --force Recommended protections disabled.
-npm error code ENOLOCK
-npm error audit This command requires an existing lockfile.
-npm error audit Try creating one first with: npm i --package-lock-only
-npm error audit Original error: loadVirtual requires existing shrinkwrap file
-npm error A complete log of this run can be found in: C:\Users\2308533\AppData\Local\npm-cache\_logs\2024-06-26T14_24_45_659Z-debug-0.log
+Node.js v20.13.1
+PS C:\React Projects\myapp> 
