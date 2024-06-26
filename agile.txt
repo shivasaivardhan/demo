@@ -1,0 +1,45 @@
+agile
+linux
+git
+html css JS(DOM)
+Java -oops collections jdbc java8 features
+
+	vector =arraylist+synchroniastion
+	comaparable and comparator
+	JDK JVM 
+	JDBC(RCSEC)
+SQL
+jUnit
+PL/SQL
+
+Happy hacking!
+PS C:\Users\2308533\OneDrive - Cognizant\Desktop\Spring & React Projects> npm start
+npm error Missing script: "start"
+npm error
+npm error Did you mean one of these?
+npm error   npm star # Mark your favorite packages
+npm error   npm stars # View packages marked as favorites
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: C:\Users\2308533\AppData\Local\npm-cache\_logs\2024-06-26T13_55_19_368Z-debug-0.log
+PS C:\Users\2308533\OneDrive - Cognizant\Desktop\Spring & React Projects> cd myapp
+PS C:\Users\2308533\OneDrive - Cognizant\Desktop\Spring & React Projects\myapp> npm start
+
+> myapp@0.1.0 start
+> react-scripts start
+
+'React' is not recognized as an internal or external command,
+operable program or batch file.
+node:internal/modules/cjs/loader:1148
+  throw err;
+  ^
+
+Error: Cannot find module 'C:\Users\2308533\OneDrive - Cognizant\Desktop\react-scripts\bin\react-scripts.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1145:15)
+    at Module._load (node:internal/modules/cjs/loader:986:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:174:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
