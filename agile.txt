@@ -28,3 +28,9 @@ module.exports = function override(config) {
 
   return config;
 };
+"scripts": {
+  "start": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
+  "build": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+  "test": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts test",
+  "eject": "react-scripts eject"
+}
