@@ -12,34 +12,71 @@ SQL
 jUnit
 PL/SQL
 
+
+PS C:\React Projects> npx create-react-app myapp
+
+Creating a new React app in C:\React Projects\myapp.
+
+Installing packages. This might take a couple of minutes.
+Installing react, react-dom, and react-scripts with cra-template...
+
+
+added 1482 packages in 2m
+
+262 packages are looking for funding
+  run `npm fund` for details
+
+Initialized a git repository.
+
+Installing template dependencies using npm...
+
+added 63 packages, and changed 1 package in 19s
+
+262 packages are looking for funding
+  run `npm fund` for details
+Removing template package using npm...
+
+
+removed 1 package, and audited 1545 packages in 11s
+
+262 packages are looking for funding
+  run `npm fund` for details
+
+8 vulnerabilities (2 moderate, 6 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+Created git commit.
+
+Success! Created myapp at C:\React Projects\myapp
+Inside that directory, you can run several commands:
+
+  npm start
+    Starts the development server.
+
+  npm run build
+    Bundles the app into static files for production.
+
+  npm test
+    Starts the test runner.
+
+  npm run eject
+    Removes this tool and copies build dependencies, configuration files
+    and scripts into the app directory. If you do this, you can’t go back!
+
+We suggest that you begin by typing:
+
+  cd myapp
+  npm start
+
 Happy hacking!
-PS C:\Users\2308533\OneDrive - Cognizant\Desktop\Spring & React Projects> npm start
-npm error Missing script: "start"
-npm error
-npm error Did you mean one of these?
-npm error   npm star # Mark your favorite packages
-npm error   npm stars # View packages marked as favorites
-npm error
-npm error To see a list of scripts, run:
-npm error   npm run
-npm error A complete log of this run can be found in: C:\Users\2308533\AppData\Local\npm-cache\_logs\2024-06-26T13_55_19_368Z-debug-0.log
-PS C:\Users\2308533\OneDrive - Cognizant\Desktop\Spring & React Projects> cd myapp
-PS C:\Users\2308533\OneDrive - Cognizant\Desktop\Spring & React Projects\myapp> npm start
-
-> myapp@0.1.0 start
-> react-scripts start
-
-'React' is not recognized as an internal or external command,
-operable program or batch file.
-node:internal/modules/cjs/loader:1148
-  throw err;
-  ^
-
-Error: Cannot find module 'C:\Users\2308533\OneDrive - Cognizant\Desktop\react-scripts\bin\react-scripts.js'
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1145:15)
-    at Module._load (node:internal/modules/cjs/loader:986:27)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:174:12)
-    at node:internal/main/run_main_module:28:49 {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: []
-}
+PS C:\React Projects> npm audit fix --force
+npm warn using --force Recommended protections disabled.
+npm error code ENOLOCK
+npm error audit This command requires an existing lockfile.
+npm error audit Try creating one first with: npm i --package-lock-only
+npm error audit Original error: loadVirtual requires existing shrinkwrap file
+npm error A complete log of this run can be found in: C:\Users\2308533\AppData\Local\npm-cache\_logs\2024-06-26T14_24_45_659Z-debug-0.log
