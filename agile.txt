@@ -34,3 +34,480 @@ module.exports = function override(config) {
   "test": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts test",
   "eject": "react-scripts eject"
 }
+
+
+Looking at the ChatGPT code compared to what I provided, here's my analysis:
+
+## 🎯 ChatGPT's Approach vs. Mine
+
+### **ChatGPT's Code - Pros:**
+✅ **Simpler and more practical** - Uses actual Strands framework syntax  
+✅ **Real tool integration** - Uses `@tool` decorator properly  
+✅ **Cleaner separation** - Each tool is a focused function  
+✅ **LLM-driven orchestration** - The agent decides which tools to call  
+✅ **Production-ready** - Uses real libraries (requests, BeautifulSoup)  
+✅ **Actual Strands framework** - This is how Strands really works!
+
+### **My Code - Pros:**
+✅ **Complete architecture** - Shows full Strands pattern with 4 strands  
+✅ **Detailed validation logic** - More comprehensive rule checking  
+✅ **Better typing** - Uses dataclasses and proper type hints  
+✅ **Enterprise patterns** - Audit logs, metrics, scheduling  
+✅ **Educational** - Shows the conceptual framework clearly
+
+## ❌ Critical Issue with My Code:
+**I provided a custom implementation that doesn't use the actual Strands framework!** I showed the *pattern* but not the real library usage.
+
+## 💡 Recommendation:
+
+**Use ChatGPT's approach as the foundation** because it:
+- Uses the real Strands framework correctly
+- Is simpler and more maintainable
+- Follows the library's intended design
+
+**But enhance it with my architectural patterns:**
+
+Here's the improved version combining both:
+
+```python
+from strands import Agent, tool
+from strands.models.openai import OpenAIModel
+from typing import Dict, List
+from dataclasses import dataclass
+from enum import Enum
+import requests
+from bs4 import BeautifulSoup
+import json
+from datetime import datetime
+
+# ============================================================================
+# DOMAIN MODELS (from my approach)
+# ============================================================================
+
+class Severity(Enum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+@dataclass
+class ComplianceIssue:
+    rule: str
+    severity: str
+    description: str
+    recommendation: str
+
+# ============================================================================
+# STRAND 1: CONTENT SCANNING TOOLS
+# ============================================================================
+
+@tool
+def fetch_page(url: str) -> str:
+    """Fetch HTML content from a URL"""
+    try:
+        resp = requests.get(url, timeout=10, headers={
+            'User-Agent': 'ComplianceBot/1.0'
+        })
+        resp.raise_for_status()
+        return resp.text
+    except Exception as e:
+        return f"ERROR: Failed to fetch {url}: {str(e)}"
+
+@tool
+def extract_page_metadata(html: str, url: str) -> dict:
+    """Extract metadata and basic structure from HTML"""
+    soup = BeautifulSoup(html, "html.parser")
+    
+    return {
+        'url': url,
+        'title': soup.title.string if soup.title else "No title",
+        'has_forms': len(soup.select("form")) > 0,
+        'form_count': len(soup.select("form")),
+        'image_count': len(soup.select("img")),
+        'link_count': len(soup.select("a")),
+        'has_scripts': len(soup.select("script")) > 0
+    }
+
+# ============================================================================
+# STRAND 2: COMPLIANCE VALIDATION TOOLS
+# ============================================================================
+
+@tool
+def check_gdpr_compliance(html: str, url: str) -> dict:
+    """Check GDPR-specific requirements"""
+    soup = BeautifulSoup(html, "html.parser")
+    issues = []
+    
+    # Cookie banner check
+    cookie_banner = soup.select_one(
+        "div.cookie-banner, .cookie-consent, #cookie-notice, [class*='cookie']"
+    )
+    if not cookie_banner:
+        issues.append({
+            'rule': 'Cookie Consent Banner',
+            'severity': 'HIGH',
+            'description': 'No cookie consent banner detected',
+            'recommendation': 'Implement GDPR-compliant cookie banner (CookieBot, OneTrust)'
+        })
+    
+    # Privacy policy link
+    privacy_link = False
+    for a in soup.select("a"):
+        href = a.get('href', '').lower()
+        text = a.get_text(strip=True).lower()
+        if 'privacy' in href or 'privacy' in text:
+            privacy_link = True
+            break
+    
+    if not privacy_link:
+        issues.append({
+            'rule': 'Privacy Policy Link',
+            'severity': 'CRITICAL',
+            'description': 'Privacy policy link not found',
+            'recommendation': 'Add prominent privacy policy link in footer'
+        })
+    
+    # Opt-in checkbox in forms
+    forms = soup.select("form")
+    forms_without_optin = 0
+    for form in forms:
+        has_optin = False
+        for checkbox in form.select("input[type=checkbox]"):
+            label = checkbox.find_previous_sibling("label") or checkbox.find_next_sibling("label")
+            if label and any(word in label.text.lower() for word in ['opt', 'consent', 'agree']):
+                has_optin = True
+        if not has_optin:
+            forms_without_optin += 1
+    
+    if forms_without_optin > 0:
+        issues.append({
+            'rule': 'Data Processing Consent',
+            'severity': 'HIGH',
+            'description': f'{forms_without_optin} form(s) without explicit consent checkbox',
+            'recommendation': 'Add opt-in checkbox with clear data processing notice'
+        })
+    
+    return {
+        'category': 'GDPR',
+        'url': url,
+        'compliant': len(issues) == 0,
+        'issues': issues
+    }
+
+@tool
+def check_accessibility_compliance(html: str, url: str) -> dict:
+    """Check WCAG accessibility requirements"""
+    soup = BeautifulSoup(html, "html.parser")
+    issues = []
+    
+    # Alt text on images
+    images = soup.select("img")
+    images_without_alt = [img for img in images if not img.get("alt")]
+    
+    if images_without_alt:
+        issues.append({
+            'rule': 'Image Alt Text (WCAG 1.1.1)',
+            'severity': 'HIGH',
+            'description': f'{len(images_without_alt)} of {len(images)} images missing alt text',
+            'recommendation': 'Add descriptive alt text to all images'
+        })
+    
+    # Form labels
+    forms = soup.select("form")
+    inputs_without_labels = 0
+    for form in forms:
+        for inp in form.select("input, textarea, select"):
+            if inp.get('type') in ['hidden', 'submit', 'button']:
+                continue
+            
+            inp_id = inp.get('id')
+            aria_label = inp.get('aria-label')
+            has_label = False
+            
+            if inp_id:
+                has_label = soup.select_one(f"label[for='{inp_id}']") is not None
+            
+            if not has_label and not aria_label:
+                inputs_without_labels += 1
+    
+    if inputs_without_labels > 0:
+        issues.append({
+            'rule': 'Form Input Labels (WCAG 3.3.2)',
+            'severity': 'HIGH',
+            'description': f'{inputs_without_labels} form inputs missing labels',
+            'recommendation': 'Add <label> elements or aria-label attributes'
+        })
+    
+    # Page language
+    html_tag = soup.select_one("html")
+    if not html_tag or not html_tag.get('lang'):
+        issues.append({
+            'rule': 'Page Language (WCAG 3.1.1)',
+            'severity': 'MEDIUM',
+            'description': 'HTML lang attribute missing',
+            'recommendation': 'Add lang="en" or appropriate language to <html> tag'
+        })
+    
+    return {
+        'category': 'Accessibility',
+        'url': url,
+        'compliant': len(issues) == 0,
+        'issues': issues
+    }
+
+@tool
+def check_legal_compliance(html: str, url: str) -> dict:
+    """Check legal requirements"""
+    soup = BeautifulSoup(html, "html.parser")
+    issues = []
+    
+    # Terms of service link
+    terms_link = False
+    for a in soup.select("a"):
+        text = a.get_text(strip=True).lower()
+        href = a.get('href', '').lower()
+        if any(term in text or term in href for term in ['terms', 'tos', 'terms of service', 'terms & conditions']):
+            terms_link = True
+            break
+    
+    if not terms_link:
+        issues.append({
+            'rule': 'Terms of Service Link',
+            'severity': 'CRITICAL',
+            'description': 'Terms of service link not found',
+            'recommendation': 'Add terms of service link in footer'
+        })
+    
+    # Contact information
+    has_contact = 'contact' in html.lower() or '@' in html
+    if not has_contact:
+        issues.append({
+            'rule': 'Contact Information',
+            'severity': 'LOW',
+            'description': 'No visible contact information found',
+            'recommendation': 'Add contact email or contact page link'
+        })
+    
+    return {
+        'category': 'Legal',
+        'url': url,
+        'compliant': len(issues) == 0,
+        'issues': issues
+    }
+
+# ============================================================================
+# STRAND 3: NOTIFICATION TOOLS
+# ============================================================================
+
+@tool
+def send_email_alert(recipients: List[str], subject: str, body: str) -> bool:
+    """Send email alert (mock implementation)"""
+    # In production: use SendGrid, AWS SES, etc.
+    print(f"📧 EMAIL SENT")
+    print(f"To: {', '.join(recipients)}")
+    print(f"Subject: {subject}")
+    print(f"Body:\n{body}\n")
+    return True
+
+@tool
+def send_slack_alert(webhook_url: str, message: str) -> bool:
+    """Send Slack notification"""
+    try:
+        payload = {"text": message}
+        resp = requests.post(webhook_url, json=payload, timeout=5)
+        return resp.status_code == 200
+    except Exception as e:
+        print(f"Slack alert failed: {e}")
+        return False
+
+@tool
+def send_teams_alert(webhook_url: str, message: str) -> bool:
+    """Send Microsoft Teams notification"""
+    try:
+        payload = {"text": message}
+        resp = requests.post(webhook_url, json=payload, timeout=5)
+        return resp.status_code == 200
+    except Exception as e:
+        print(f"Teams alert failed: {e}")
+        return False
+
+@tool
+def create_jira_ticket(project_key: str, summary: str, description: str, priority: str) -> str:
+    """Create JIRA ticket for compliance issue"""
+    # Mock implementation - in production use JIRA API
+    ticket_id = f"{project_key}-{int(datetime.now().timestamp())}"
+    print(f"🎫 JIRA TICKET CREATED: {ticket_id}")
+    print(f"Priority: {priority}")
+    print(f"Summary: {summary}")
+    return ticket_id
+
+# ============================================================================
+# STRAND 4: AUDIT & REPORTING TOOLS
+# ============================================================================
+
+@tool
+def log_compliance_scan(scan_data: dict) -> bool:
+    """Log compliance scan results for audit trail"""
+    try:
+        with open("compliance_audit_log.json", "a") as f:
+            scan_data['timestamp'] = datetime.now().isoformat()
+            f.write(json.dumps(scan_data) + "\n")
+        return True
+    except Exception as e:
+        print(f"Logging failed: {e}")
+        return False
+
+@tool
+def generate_compliance_report(scan_results: List[dict]) -> str:
+    """Generate compliance report summary"""
+    total_pages = len(scan_results)
+    total_issues = sum(len(r.get('issues', [])) for r in scan_results)
+    critical_issues = sum(
+        len([i for i in r.get('issues', []) if i.get('severity') == 'CRITICAL'])
+        for r in scan_results
+    )
+    
+    report = f"""
+COMPLIANCE SCAN REPORT
+Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+{'='*60}
+
+Summary:
+- Total Pages Scanned: {total_pages}
+- Total Issues Found: {total_issues}
+- Critical Issues: {critical_issues}
+
+Details:
+"""
+    
+    for result in scan_results:
+        url = result.get('url', 'Unknown')
+        issues = result.get('issues', [])
+        report += f"\n{url}:\n"
+        if not issues:
+            report += "  ✅ All checks passed\n"
+        else:
+            for issue in issues:
+                report += f"  ❌ [{issue['severity']}] {issue['rule']}: {issue['description']}\n"
+    
+    return report
+
+# ============================================================================
+# AGENT CONFIGURATION
+# ============================================================================
+
+# Setup model
+model = OpenAIModel(
+    client_args={"api_key": "YOUR_API_KEY"},
+    model_id="gpt-4",
+    params={"temperature": 0}
+)
+
+# System prompt
+system_prompt = """
+You are the Governance & Compliance Analytics Agent built using the Strands framework.
+
+Your mission: Scan web pages for GDPR, accessibility (WCAG), and legal compliance, then alert appropriate teams.
+
+WORKFLOW:
+1. Use fetch_page to get HTML content
+2. Use extract_page_metadata to understand page structure
+3. Run compliance checks:
+   - check_gdpr_compliance (cookie banners, privacy policies, opt-ins)
+   - check_accessibility_compliance (WCAG standards, alt text, labels)
+   - check_legal_compliance (terms of service, contact info)
+4. For any issues found:
+   - CRITICAL severity: send_slack_alert + create_jira_ticket immediately
+   - HIGH severity: send_email_alert to content editors
+   - MEDIUM/LOW: include in log_compliance_scan
+5. Always log_compliance_scan with results
+6. Generate generate_compliance_report at the end
+
+SEVERITY ROUTING:
+- CRITICAL → Slack + JIRA + Email to legal team
+- HIGH → Email to content editors
+- MEDIUM/LOW → Log for weekly digest
+
+Be thorough, precise, and always provide actionable recommendations.
+"""
+
+# Create agent with all tools
+agent = Agent(
+    model=model,
+    system_prompt=system_prompt,
+    tools=[
+        # Scanning tools
+        fetch_page,
+        extract_page_metadata,
+        # Validation tools
+        check_gdpr_compliance,
+        check_accessibility_compliance,
+        check_legal_compliance,
+        # Notification tools
+        send_email_alert,
+        send_slack_alert,
+        send_teams_alert,
+        create_jira_ticket,
+        # Audit tools
+        log_compliance_scan,
+        generate_compliance_report
+    ]
+)
+
+# ============================================================================
+# USAGE
+# ============================================================================
+
+def run_compliance_scan(urls: List[str], config: dict):
+    """
+    Run compliance scan on multiple URLs
+    
+    Args:
+        urls: List of URLs to scan
+        config: Configuration with alert channels, recipients, etc.
+    """
+    prompt = f"""
+Scan the following URLs for compliance:
+{chr(10).join('- ' + url for url in urls)}
+
+Alert Configuration:
+- Slack Webhook: {config.get('slack_webhook', 'N/A')}
+- Email Recipients (Critical): {', '.join(config.get('critical_emails', []))}
+- Email Recipients (Editors): {', '.join(config.get('editor_emails', []))}
+- JIRA Project: {config.get('jira_project', 'COMP')}
+
+Execute the full compliance workflow and provide a summary.
+"""
+    
+    result = agent(prompt)
+    return result
+
+# Example usage
+if __name__ == "__main__":
+    config = {
+        'slack_webhook': 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL',
+        'critical_emails': ['legal@company.com', 'cto@company.com'],
+        'editor_emails': ['content-team@company.com'],
+        'jira_project': 'COMP'
+    }
+    
+    urls = [
+        'https://example.com',
+        'https://example.com/privacy',
+        'https://example.com/terms'
+    ]
+    
+    result = run_compliance_scan(urls, config)
+    print(result)
+```
+
+## 🎯 Why This Combined Approach is Better:
+
+1. **Uses real Strands framework** (like ChatGPT's)
+2. **Comprehensive validation logic** (like mine)
+3. **Proper tool separation** following Strands patterns
+4. **Production-ready** with real libraries
+5. **Enterprise features** (JIRA, multiple notification channels, audit logs)
+6. **LLM-driven orchestration** - the agent decides the workflow
+
+**Bottom line**: ChatGPT gave you the correct framework usage. I gave you the architectural patterns. The combination is what you need! 🚀
